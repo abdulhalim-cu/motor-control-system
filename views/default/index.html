@@ -1,0 +1,129 @@
+{{extend 'layout.html'}}
+
+{{block page_wrapper}}
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Dashboard</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+	<!-- /.row -->
+	{{if user_devices:}}
+		<div class="row">
+			{{for device in user_devices:}}
+			<div class="col-lg-4 col-md-6">
+				{{
+                from datetime import datetime
+                import calendar
+                import pytz
+
+	            d1 = device[6]
+                d2 = datetime.now()
+                td = d2-d1
+                timedifference = td.total_seconds() / 60
+	            if timedifference < 20:
+	            }}
+                <div class="panel panel-green">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-tasks fa-3x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{=device[2]}}</div>
+                                <div>{{=device[3]}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{=URL('default','current_states', args=device[0])}}">
+                        <div class="panel-footer">
+                            <span class="pull-left">current states</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+                {{else:}}
+                <div class="panel panel-red">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-tasks fa-3x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{=device[2]}}</div>
+                                <div>{{=device[3]}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{=URL('default','current_states', args=device[0])}}">
+                        <div class="panel-footer">
+                            <span class="pull-left">current states</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+                {{pass}}
+            </div>
+			{{pass}}
+		</div>
+    {{pass}}
+	<div class="row">
+    	<div class="col-lg-12">
+        	<div class="panel panel-default">
+            	<div class="panel-heading">
+        			<i class="fa fa-bar-chart-o fa-fw"></i> <b style="font-size: 16px;">Device Conditions</b>
+        			<div class="pull-right">
+
+                    </div>
+                    {{if user_devices:}}
+                    <div class="panel-body">
+                    	<table class="table table-condensed">
+                        	<thead>
+                        		<tr>
+                        			<th>Device name</th>
+                        			<th>Device Location</th>
+                        			<th>Last connection</th>
+                        			<th>Current state</th>
+                        		</tr>
+                        	</thead>
+                        	<tbody>
+                        	{{for device in user_devices:}}
+                        		<tr>
+                        			<td>{{=device[2]}}</td>
+                        			<td>{{=device[3]}}</td>
+                        			{{if device[5] == device[6]:}}
+                        			<td>Not connected</td>
+                        			{{else:}}
+                        			<td>{{=device[6]}}</td>
+                        			{{pass}}
+                        			{{
+                                    from datetime import datetime
+                                    import calendar
+                                    import pytz
+
+                        			d1 = device[6]
+						            d2 = datetime.now()
+						            td = d2-d1
+                                    timedifference = td.total_seconds() / 60
+                                    if timedifference < 20:
+					                }}
+                        			<td style="color: green;">Device is alive</td>
+                        			{{else:}}
+                        			<td style="color: red;">Device is dead</td>
+                        			{{pass}}
+                        		</tr>
+                        	{{pass}}
+                        	</tbody>
+                        </table>
+                    </div>
+                    {{else:}}
+                    <div>No device found. please register your device.</div>
+                    {{pass}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{end}}

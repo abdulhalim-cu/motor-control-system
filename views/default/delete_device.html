@@ -1,0 +1,63 @@
+{{extend 'layout.html'}}
+{{block page_wrapper}}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Delete Device</h1>
+    </div>
+</div>
+{{if user_devices:}}
+<div class="w2p_flash alert alert-dismissable">{{=response.flash or ''}}</div>
+    {{for device in user_devices:}}
+    <div class="modal fade {{=device[0]}}" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Do you want to delete {{=device[1]}}?</h4>
+            </div>
+            {{=form.custom.begin}}
+            <div class="modal-body">
+                <p>
+                    Type <strong>YES</strong> to delete this device
+                </p>
+                <form>
+                    <div class="form-group">
+                            {{form.custom.widget.action["_placeholder"] = "YES or NO"}}
+                            {{form.custom.widget.action["_required"] = "required"}}
+                            {{=form.custom.widget.action}}
+                    </div>
+                    <div class="form-group">
+                        {{var = device[0]}}
+                        {{form.custom.widget.device_ref_id["_value"] = var}}
+                        {{form.custom.widget.device_ref_id["_type"] = "hidden"}}
+                        {{=form.custom.widget.device_ref_id}}
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button data-dismiss="modal" type="button" class="btn btn-warning">Cancel</button>
+                <button type="submit" class="btn btn-success">Confirm</button>
+                {{=form.custom.end}}
+            </div>
+        </div>
+      </div>
+    </div>
+    {{pass}}
+    <div class="row">
+        <div class="col-lg-6 col-md-6">
+            <ul class="list-group"> 
+            {{for device in user_devices:}}
+                <li class="list-group-item"><a data-toggle="modal" data-target=".{{=device[0]}}">{{=device[1]}}</a></li>
+            {{pass}}
+            </ul>
+        </div>
+    </div>
+{{else:}}
+    <div class="row">
+        <div class="col-lg-6 col-md-6">
+            <h2>
+                No device found
+            </h2>
+        </div>
+    </div>
+{{pass}}
+{{end}}
