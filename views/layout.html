@@ -27,6 +27,9 @@
     <link rel="stylesheet" href="{{=URL('static','font-awesome/css/font-awesome.css')}}"/>
     <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+
     <!-- All JavaScript at the bottom, except for Modernizr which enables
          HTML5 elements & feature detects -->
     <script src="{{=URL('static','js/modernizr-2.8.3.min.js')}}"></script>
@@ -73,7 +76,7 @@
                 <li>
                   <a href="#">
                     <div>
-                      <strong>John Smith</strong>
+                      <strong>Abdul Halim</strong>
                       <span class="pull-right text-muted">
                           <em>Yesterday</em>
                       </span>
@@ -85,7 +88,7 @@
                 <li>
                   <a href="#">
                     <div>
-                      <strong>John Smith</strong>
+                      <strong>Abdul Halim</strong>
                       <span class="pull-right text-muted">
                           <em>Yesterday</em>
                       </span>
@@ -97,7 +100,7 @@
               <li>
                 <a href="#">
                   <div>
-                    <strong>John Smith</strong>
+                    <strong>Abdul Halim</strong>
                     <span class="pull-right text-muted">
                         <em>Yesterday</em>
                     </span>
@@ -227,30 +230,42 @@
                     Dashboard
                   </a>
                 </li>
+                {{if auth.user:}}
                 <li>
-                  <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Devices<span class="fa arrow"></span></a>
-                  {{if auth.user:}}
+                  <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Device Controller<span class="fa arrow"></span></a>
                   {{username = "{}".format(auth.user['username'])}}
                   {{devices = db.executesql("SELECT Device.id, Device.device_name FROM Device INNER JOIN (auth_user INNER JOIN User_Device \
                                 ON auth_user.id = User_Device.user_ref_id) ON Device.id = User_Device.device_ref_id \
                                 WHERE ((auth_user.username)='{}')".format(username))}}
+                  {{if devices:}}
                   <ul class="nav nav-second-level">
-                    {{if devices:}}
                     {{for dev in devices:}}
                     <li>
                       <a href="{{=URL('default','device_controller', args=dev[0])}}">{{=dev[1]}}</a>
                     </li>
                     {{pass}}
-                    {{pass}}
                   </ul>
                   {{pass}}
                 </li>
                 <li>
-                  <a href="{{=URL('default','add_new_device')}}"><i class="fa fa-table fa-fw"></i> Add New Device</a>
+                  <a href="{{=URL('default','add_new_device')}}"><i class="fa fa-table fa-fw"></i> Add Device</a>
                 </li>
                 <li>
-                  <a href="{{=URL('default','delete_device')}}"><i class="fa fa-table fa-fw"></i> Delete Your Device</a>
+                  <a href="{{=URL('default','delete_device')}}"><i class="fa fa-table fa-fw"></i> Delete Device</a>
                 </li>
+                <li>
+                  <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Update Device<span class="fa arrow"></span></a>
+                  {{if devices:}}
+                  <ul class="nav nav-second-level">
+                    {{for dev in devices:}}
+                    <li>
+                      <a href="{{=URL('default','update_device', args=dev[0])}}">{{=dev[1]}}</a>
+                    </li>
+                    {{pass}}
+                  </ul>
+                  {{pass}}
+                </li>
+                {{pass}}
               </ul>
             </div>
           </div>
@@ -321,6 +336,9 @@
       {{pass}}
       <!-- Share ============================y============ -->
       <script src="{{=URL('static','js/share.js',vars=dict(static=URL('static','images')))}}"></script>
+        
+      <!-- Latest compiled and minified JavaScript -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
     </div>
   </body>
 </html>

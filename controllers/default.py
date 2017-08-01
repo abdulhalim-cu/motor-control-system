@@ -58,22 +58,30 @@ def add_new_device():
             response.flash='Device is already registered!'
     return dict()
 
-
-auth.requires_login()
+@auth.requires_login()
 def device_controller():
     if request.args(0, cast=int):
         device_ref_id = request.args(0, cast=int)
-        id = db.executesql("SELECT id FROM Control_Instruction WHERE device_ref_id ='{}'".format(device_ref_id))
-        if id:
-            db.Control_Instruction.id.readable = db.Control_Instruction.id.writable = False
-            db.Control_Instruction.device_ref_id.readable = db.Control_Instruction.device_ref_id.writable = False
-            db.Control_Instruction.off_flag.readable = db.Control_Instruction.off_flag.writable = False
-            db.Control_Instruction.freq_flag.readable = db.Control_Instruction.freq_flag.writable = False
-            form = SQLFORM(db.Control_Instruction, id[0][0], showid=False).process(next=URL('default','change_status',args=device_ref_id))
-            #form.elements('input',_id='onoff')[0]['_type'] = 'button'
-            return dict(form = form)
-        else:
-            return None
+        state = db.executesql("SELECT Device_States.on_or_off,Device_States.rotation,Direction.direction_type \
+                            FROM Device_States INNER JOIN Direction ON Direction.id = Device_States.direction \
+                            WHERE Device_States.device_ref_id='{}'".format(device_ref_id))
+        if request.post_vars.submit:
+            onoff = request.post_vars.onoff
+            if onoff == 'on':
+                on_off = True
+            else:
+                on_off = False
+            rotation = request.post_vars.rotation
+            direct = request.post_vars.direction
+            direction = db.executesql("SELECT id FROM Direction WHERE direction_type='{}'".format(direct))[0][0]
+            db.executesql("UPDATE Control_Instruction SET onoff_flag='{}',rot_flag='{}',dir_flag='{}' \
+                           WHERE device_ref_id='{}'".format(on_off,rotation,direction,device_ref_id))
+            db.commit()
+            redirect(URL('default','change_status',args=device_ref_id))
+        return dict(state=state)
+    else:
+        redirect(URL('default','index'))
+
 
 def change_status():
     if request.args(0, cast=int):
@@ -172,6 +180,17 @@ def delete_device():
         session.flash ='Deleted successfully'
         redirect(URL('default','delete_device'))
     return dict(user_devices=user_devices,form=form)
+
+@auth.requires_login()
+def update_device():
+    if request.args(0, cast=int):
+        id = request.args(0, cast=int)
+        db.Device.id.readable = db.Device.id.writable = False
+        db.Device.device_id.readable = db.Device.device_id.writable = False
+        form = SQLFORM(db.Device, id, showid=False).process(next=URL('default','index'))
+        return dict(form = form)
+    else:
+        return None
 
 def user():
     """
